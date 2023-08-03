@@ -1,0 +1,19 @@
+q0 q1 q2 q3
+a b c ¢ $
+a b
+Z
+q0
+q3
+Z
+q0 ¢ Z 1 q0 Z
+q0 a Z 1 q0 Za
+q0 a a 1 q0 aa
+q0 b a 0 q1 a
+q1 b a 1 q1 a
+q1 c a -1 q2 a
+q2 b a -1 q2 λ
+q2 a Z 1 q3 Z
+q3 b Z 1 q3 Zb
+q3 b b 1 q3 bb
+q3 c b 1 q3 λ
+q3 $ Z 1 q3 Z
