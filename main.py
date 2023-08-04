@@ -19,54 +19,57 @@ found  = False
 def generate(state, text_input, index, stack):
     global found
 
-    print("here")
+    print(state, text_input, index, stack, text_input[index])
     if is_found(state, text_input, index, stack):
-        found = True
-        return 1
+        return True
     
     validMove, state, index, stack = hasValidMove(state, text_input, index, stack)
     if (validMove):
-        generate(state, text_input, index, stack)
+        return generate(state, text_input, index, stack)
+    else:
+        return False
 
 def is_found(state, text_input, index, stack):
     global accept_with
     global finalStates
-
     if (len(text_input) - 1) == index:
         for s in finalStates:
             if s == state:
                 if len(stack) == 1:
                     if stack[0] == accept_with:
-                        return 1
-    return 0
+                        return True
+    return False
 
 def hasValidMove(state, text_input, index, stack):
     global transitions
 
+    if len(stack) == 0 and text_input[index] == "s":
+        index = index + 1
+        stack.append("Z")
+        return True, state, index, stack
+
     for t in transitions:
         if t != state:
             continue
-
+       
         for i in transitions[t]:
-            if len(stack) == 0 and text_input[index] == "s":
-                index = index + 1
-                stack.append["Z"]
-                return True, state, index, stack
-            
-            for possible_input in i[0]:
-                if possible_input == text_input[index]:
-                    if stack[-1] == i[possible_input][1]:
-                        if i[possible_input][2] == 1:
-                            index = index + 1
-                        elif i[possible_input][2] == -1:
-                            index = index - 1
+            # print(i[0], text_input[index], i[1], stack[-1])
 
-                        push = list(i[possible_input][4])
-                        
-                        stack.extend(push)
-                        
-                        return True, i[possible_input][3], index, stack
+            if i[0] == text_input[index] and stack[-1] == i[1]:
+                if int(i[2]) == 1:
+                    index = index + 1
+                elif int(i[2]) == -1:
+                    index = index - 1
+                
+                push = list(i[4])
+                if len(push) == 1 and push[0] == "l":
+                    stack.pop()
+                else:
+                    stack.pop()
+                    stack.extend(push)
                     
+                return True, i[3], index, stack
+    return False, state, index, stack
 
     
 def isValidInput(text_input):
@@ -158,6 +161,8 @@ while flag != True:
 
     stack = []
     if not generate(initialState, text_input, 0, stack):
-        print("s")
+        print("ey")
+        flag = True
     else:
         print("yey")
+        flag = True
