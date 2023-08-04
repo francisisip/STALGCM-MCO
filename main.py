@@ -9,6 +9,7 @@ setOfStates = []
 inputAlphabet = []
 stackAlphabet = []
 transitions = {}
+initialStack = ""
 initialState = ""
 finalStates = []
 rejectedStates = []
@@ -72,9 +73,8 @@ def hasValidMove(state, text_input, index, stack):
     return False, state, index, stack
 
     
-def isValidInput(text_input):
-    pattern = r'^s[^s^e]*e$'
-    return bool(re.match(pattern, text_input))
+def contains_s_e_l(string):
+    return 1 if 's' in string or 'e' in string or 'l' in string else 0
 
 def parse_input(filename):
     global nStates
@@ -103,20 +103,23 @@ def parse_input(filename):
     # for initial alphabet
     stackAlphabet = lines[2]
 
+    # for initial stack symbol
+    initialStack = lines[3]
+
     # for initial state
-    initialState = lines[3]
+    initialState = lines[4]
 
     # list of acceptable states
-    finalStates.extend(lines[4].split())
+    finalStates.extend(lines[5].split())
 
     # for accepts with 
-    accept_with = lines[5]
+    accept_with = lines[6]
 
     # Define the transitions dictionary
     transitions = {}
 
     # add rules
-    for i in range(6, len(lines)):
+    for i in range(7, len(lines)):
         transition = lines[i].split()
 
         configuration = [(transition[1], transition[2], transition[3], transition[4], transition[5])]
@@ -147,19 +150,19 @@ while not parse_input(filename):
     print("File not found, please try again")
     filename = input("Please enter automata file:\n")
 
-print("Please don't forget to add s at the beginning of your string and e at the end of it to indicate left and right endmarkers\n")
-print("s and e should also not be used as an alphabet of your language\n")
+print("s, e, and l should not be used as an alphabet of your language\n")
 text_input = input("Please enter string:\n")
 
-print(isValidInput(text_input))
-while not isValidInput(text_input):
-    print("Your string did not start / end with s and e respectively. Please try again")
+print(contains_s_e_l(text_input))
+while contains_s_e_l(text_input):
+    print("Your string contains the characters \"s\", \"e\", or \"l\"")
     text_input = input("Please enter string:\n")
 
-
+text_input = "s" + text_input + "e"
 while flag != True:
 
     stack = []
+    stack.append(initialStack)
     if not generate(initialState, text_input, 0, stack):
         print("ey")
         flag = True
