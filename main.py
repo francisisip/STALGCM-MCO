@@ -178,6 +178,10 @@ def parse_input(filename):
 
     return 1
 
+def reset():
+    global found 
+    found = False
+
 def check_automata():
     global found 
     global stack
@@ -193,6 +197,7 @@ def check_automata():
 
     result = "accepts" if found else "rejects"
     messagebox.showinfo("Result", f"The automata {result} the string.")
+    reset()
 
 def resetStep():
     global currentStack
@@ -290,7 +295,7 @@ def update_input_highlight(current_index, input_labels,input_string):
 
 root = tk.Tk()
 root.title("2-Way Deterministic Pushdown Automata")
-root.geometry("900x600")
+root.geometry("750x500")
 
 left_frame = tk.Frame(root)
 left_frame.grid(row=0, column=0, padx=5, pady=5)
@@ -348,5 +353,4 @@ current_stack_var.set("Z")
 current_stack_display = tk.Label(right_frame, textvariable=current_stack_var)
 current_stack_display.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
-root.resizable(False, False)
 root.mainloop()
