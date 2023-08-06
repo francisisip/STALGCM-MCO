@@ -212,6 +212,7 @@ def resetStep():
 
     current_state_var.set("None")
     current_input_var.set("None")
+    current_stack_var.set("Z")
 
 
 def step_automata():
@@ -228,43 +229,38 @@ def step_automata():
     text_input = entry_string.get()
     text_input = "s" + text_input + "e"
 
-    # Define input_string here and before creating the labels
     input_string = text_input
 
-    # Clear the input frame before creating new labels
     for widget in middle_frame.winfo_children():
         widget.destroy()
 
-    # Create labels for each character of the input_string and place them in the middle_frame
     input_labels = []
     for i, char in enumerate(input_string):
         label = tk.Label(middle_frame, text=char, width=2, relief="solid", padx=5, pady=5)
         label.grid(row=0, column=i)
         input_labels.append(label)
 
-    # Update the input highlighting
+
     update_input_highlight(currIndex, input_labels, input_string)
-    # Update the current stack label
+
     current_stack_var.set(currentStack)
     generate_by_step(currentState, text_input, currIndex, currentStack)
     if (found):
         result = "accepts" if found else "rejects"
         messagebox.showinfo("Result", f"The automata {result} the string.")
         resetStep()
-        # Hide the middle_frame when the machine finishes reading a string
         middle_frame.grid_remove()
 
     if (noMoreMoves):
         messagebox.showinfo("Result", "The automata rejects the string.")
         resetStep()
-        # Hide the middle_frame when the machine finishes reading a string
         middle_frame.grid_remove()
     middle_frame.grid()
 
 def display_input_string():
     global input_string
     for i, char in enumerate(input_string):
-        input_labels[i].config(text=char, bg="white")  # Reset the background color for all characters
+        input_labels[i].config(text=char, bg="white")
     input_labels[currIndex].config(bg="yellow")
     
 def browse_file():
@@ -282,10 +278,8 @@ def reset_fields():
     entry_file.delete(0, tk.END)
     entry_file.config(state="readonly")
     entry_string.delete(0, tk.END)
-    # Hide the middle_frame when the machine finishes reading a string
     middle_frame.grid_remove()
 
-# New code to display the input string and highlight the character being read
 def update_input_highlight(current_index, input_labels,input_string):
     for i in range(len(input_string)):
         if i == current_index:
@@ -310,11 +304,9 @@ btn_check = tk.Button(left_frame, text="Fast Run", command=check_automata)
 btn_step = tk.Button(left_frame, text="Step", command=step_automata)
 btn_reset = tk.Button(left_frame, text="Reset", command=reset_fields)
 
-# New frame to display the input string
 middle_frame = tk.Frame(root, borderwidth=2, relief="ridge")
 middle_frame.grid(row=5, column=0, padx=5, pady=5)
 
-# Create a list to hold the input labels
 input_labels = []
 
 label_file.grid(row=0, column=0, padx=5, pady=5, sticky="w")
