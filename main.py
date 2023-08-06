@@ -344,7 +344,7 @@ current_stack_label = tk.Label(right_frame, text="Current Stack:")
 current_stack_label.grid(row=2, column=0, padx=5, pady=5, sticky="w")
 
 current_stack_var = tk.StringVar()
-current_stack_var.set("Empty")
+current_stack_var.set("Z")
 current_stack_display = tk.Label(right_frame, textvariable=current_stack_var)
 current_stack_display.grid(row=2, column=1, padx=5, pady=5, sticky="w")
 
