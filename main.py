@@ -60,6 +60,7 @@ def is_found(state, text_input, index, stack):
 
     current_state_var.set(state)
     current_input_var.set(text_input[index])
+    current_stack_var.set(stack)
     if (len(text_input) - 1) == index:
         for s in finalStates:
             if s == state:
@@ -181,6 +182,7 @@ def parse_input(filename):
 def reset():
     global found 
     found = False
+    current_stack_var.set("Z")
 
 def check_automata():
     global found 
