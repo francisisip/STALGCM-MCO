@@ -1,0 +1,24 @@
+q0 q1 q2 q3
+( ) s e
+(
+Z
+q0
+q3
+Z
+q0 s Z 1 q0 Z
+q0 ( Z 1 q0 Z(
+q0 ( ( 1 q0 ((
+q0 ) ( -1 q1 l
+q1 s Z 1 q2 Z
+q1 ( Z 1 q1 Z(
+q1 ( ( 1 q1 ((
+q1 ) ( -1 q2 l
+q2 ( ( 1 q2 ((
+q2 ( Z 1 q3 Z(
+q2 ) Z 1 q3 Z
+q2 ) ( -1 q3 l
+q3 ) ( 1 q3 l
+q3 ( Z 1 q3 Z(
+q3 ( ( 1 q3 ((
+q2 e Z 1 q3 Z
+q3 e Z 1 q3 Z

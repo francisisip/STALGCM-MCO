@@ -1,9 +1,10 @@
 import os
-import re
-import tkinter
-
+import tkinter as tk
+from tkinter import filedialog, messagebox
 
 # variable initialization
+
+# for complete run
 nStates = 0
 setOfStates = []
 inputAlphabet = []
@@ -13,12 +14,19 @@ initialStack = ""
 initialState = ""
 finalStates = []
 rejectedStates = []
+stack = []
 
-flag = False
-found  = False
+# for step-by-step process
+currIndex = 0
+currInput = ""
+currentState = ""
+currentStack = []
+
+# for checking
+found = False
+noMoreMoves = False
 
 def generate(state, text_input, index, stack):
-    global found
 
     print(state, text_input, index, stack, text_input[index])
     if is_found(state, text_input, index, stack):
@@ -29,40 +37,58 @@ def generate(state, text_input, index, stack):
         return generate(state, text_input, index, stack)
     else:
         return False
+    
+def generate_by_step(state, text_input, index, stack):
+    global noMoreMoves
+    global currentState
+    global currInput
+    global currIndex
+    global currentStack
+    
+    if is_found(state, text_input, index, stack):
+        return
+    
+    validMove, currentState, currIndex, currentStack = hasValidMove(currentState, text_input, currIndex, currentStack)
+    currInput = text_input[currIndex]
+    if not validMove:
+        noMoreMoves = True
 
 def is_found(state, text_input, index, stack):
     global accept_with
+    global found
     global finalStates
+
+    current_state_var.set(state)
+    current_input_var.set(text_input[index])
     if (len(text_input) - 1) == index:
         for s in finalStates:
             if s == state:
                 if len(stack) == 1:
                     if stack[0] == accept_with:
+                        found = True
                         return True
     return False
 
 def hasValidMove(state, text_input, index, stack):
     global transitions
 
-    if len(stack) == 0 and text_input[index] == "s":
-        index = index + 1
-        stack.append("Z")
-        return True, state, index, stack
-
     for t in transitions:
         if t != state:
             continue
        
+        
         for i in transitions[t]:
             # print(i[0], text_input[index], i[1], stack[-1])
 
             if i[0] == text_input[index] and stack[-1] == i[1]:
+                
                 if int(i[2]) == 1:
                     index = index + 1
                 elif int(i[2]) == -1:
                     index = index - 1
                 
                 push = list(i[4])
+                print(stack)
                 if len(push) == 1 and push[0] == "l":
                     stack.pop()
                 else:
@@ -71,10 +97,6 @@ def hasValidMove(state, text_input, index, stack):
                     
                 return True, i[3], index, stack
     return False, state, index, stack
-
-    
-def contains_s_e_l(string):
-    return 1 if 's' in string or 'e' in string or 'l' in string else 0
 
 def parse_input(filename):
     global nStates
@@ -87,6 +109,11 @@ def parse_input(filename):
     global finalStates
     global rejectedStates
     global accept_with
+    global currIndex
+    global currentStack
+    global currentState
+    global found
+    global noMoreMoves
 
     try:
         lines = [line.rstrip() for line in open(filename)]
@@ -133,6 +160,12 @@ def parse_input(filename):
         if state not in finalStates:
             rejectedStates.append(state)
 
+    currIndex = 0
+    currentState = lines[4]
+    currentStack.append(lines[3])
+    found = False
+    noMoreMoves = False
+
     # print(nStates)
     # print(setOfStates)
     # print(inputAlphabet)
@@ -145,27 +178,120 @@ def parse_input(filename):
 
     return 1
 
-filename = input("Please enter automata file:\n")
-while not parse_input(filename):
-    print("File not found, please try again")
-    filename = input("Please enter automata file:\n")
-
-print("s, e, and l should not be used as an alphabet of your language\n")
-text_input = input("Please enter string:\n")
-
-print(contains_s_e_l(text_input))
-while contains_s_e_l(text_input):
-    print("Your string contains the characters \"s\", \"e\", or \"l\"")
-    text_input = input("Please enter string:\n")
-
-text_input = "s" + text_input + "e"
-while flag != True:
+def check_automata():
+    global found 
+    global stack
+    filename = entry_file.get()
+    parse_input(filename)
+    text_input = entry_string.get()
+    
+    text_input = "s" + text_input + "e"
 
     stack = []
     stack.append(initialStack)
-    if not generate(initialState, text_input, 0, stack):
-        print("ey")
-        flag = True
-    else:
-        print("yey")
-        flag = True
+    generate(initialState, text_input, 0, stack)
+
+    result = "accepts" if found else "rejects"
+    messagebox.showinfo("Result", f"The automata {result} the string.")
+
+def resetStep():
+    global currentStack
+    global currentState
+    global currIndex
+    global currInput
+
+    currentStack = []
+    currentState = ""
+    currIndex = 0
+    currInput = ""
+
+    current_state_var.set("None")
+    current_input_var.set("None")
+
+
+def step_automata():
+    global found 
+    global currentStack
+    global currentState
+    global currIndex
+    global currInput
+
+    filename = entry_file.get()
+    if currentState == "":
+        parse_input(filename)
+    text_input = entry_string.get()
+    text_input = "s" + text_input + "e"
+
+    generate_by_step(currentState, text_input, currIndex, currentStack)
+    if (found):
+        result = "accepts" if found else "rejects"
+        messagebox.showinfo("Result", f"The automata {result} the string.")
+        resetStep()
+
+    if (noMoreMoves):
+        messagebox.showinfo("Result", "The automata rejects the string.")
+        resetStep()
+
+def browse_file():
+    filepath = filedialog.askopenfilename(filetypes=[("Text Files", "*.txt")])
+    if filepath:
+        print(filepath)
+        filename = os.path.basename(filepath)
+        entry_file.config(state="normal") 
+        entry_file.delete(0, tk.END)
+        entry_file.insert(0, filename)
+        entry_file.config(state="readonly")
+
+def reset_fields():
+    entry_file.config(state="normal")
+    entry_file.delete(0, tk.END)
+    entry_file.config(state="readonly")
+    entry_string.delete(0, tk.END)
+
+root = tk.Tk()
+root.title("2-Way Deterministic Pushdown Automata")
+root.geometry("900x600")
+
+left_frame = tk.Frame(root)
+left_frame.grid(row=0, column=0, padx=5, pady=5)
+
+label_file = tk.Label(left_frame, text="Current Machine:")
+entry_file = tk.Entry(left_frame, width=30, state="readonly")
+label_string = tk.Label(left_frame, text="Please enter string:")
+entry_string = tk.Entry(left_frame, width=30)
+
+btn_browse = tk.Button(left_frame, text="Read Machine", command=browse_file)
+btn_check = tk.Button(left_frame, text="Fast Run", command=check_automata)
+btn_step = tk.Button(left_frame, text="Step", command=step_automata)
+btn_reset = tk.Button(left_frame, text="Reset", command=reset_fields)
+
+label_file.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+entry_file.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+btn_browse.grid(row=0, column=2, padx=5, pady=5, sticky="w")
+label_string.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+entry_string.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+btn_check.grid(row=2, column=0, columnspan=3, padx=5, pady=5, sticky="w")
+btn_step.grid(row=3, column=0, columnspan=3, padx=5, pady=5, sticky="w") 
+btn_reset.grid(row=4, column=0, columnspan=3, padx=5, pady=5, sticky="w")
+
+right_frame = tk.Frame(root)
+right_frame.grid(row=0, column=1, padx=5, pady=5)
+
+current_state_label = tk.Label(right_frame, text="Current State:")
+current_state_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+
+current_state_var = tk.StringVar()
+current_state_var.set("None")
+current_state_display = tk.Label(right_frame, textvariable=current_state_var)
+current_state_display.grid(row=0, column=1, padx=5, pady=5, sticky="w")
+
+current_input_label = tk.Label(right_frame, text="Current Input:")
+current_input_label.grid(row=1, column=0, padx=5, pady=5, sticky="w")
+
+current_input_var = tk.StringVar()
+current_input_var.set("None")
+current_input_display = tk.Label(right_frame, textvariable=current_input_var)
+current_input_display.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+
+root.resizable(False, False)
+root.mainloop()
