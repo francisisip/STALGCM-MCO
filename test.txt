@@ -1,6 +1,6 @@
 q0 q1 q2 q3
 a b c
-a b
+a b Z
 Z
 q0
 q3

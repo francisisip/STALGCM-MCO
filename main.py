@@ -281,6 +281,8 @@ def reset_fields():
     entry_file.config(state="readonly")
     entry_string.delete(0, tk.END)
     middle_frame.grid_remove()
+    resetStep()
+    reset()
 
 def update_input_highlight(current_index, input_labels,input_string):
     for i in range(len(input_string)):
