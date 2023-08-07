@@ -1,3 +1,10 @@
+'''
+    STALGCM S12 Case Study Source Code
+    BAWA, Francis
+    GOMEZ, Zachary
+    REJANO, Hans Martin
+'''
+
 import os
 import tkinter as tk
 from tkinter import filedialog, messagebox
